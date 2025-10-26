@@ -27,7 +27,7 @@ namespace ItemPickHint
 
         private static readonly BuffInfo NewAddSpeed = new BuffInfo
         {
-            OriginalID = 1011,
+            OriginalID = 1011, // AddSpeed Buff
             NewID = 13600,
             GameObjectName = "new_add_speed",
             AdditionalInfo = new Dictionary<string, object>
@@ -43,6 +43,7 @@ namespace ItemPickHint
             Debug.Log("LMC: Start registry!");
             try
             {
+                TestModding();
                 StartRegistry();
             }
             catch (Exception e)
@@ -52,14 +53,43 @@ namespace ItemPickHint
             
         }
 
+        private static void TestModding()
+        {
+            // Buff? addSpeed = BuffUtils.FindBuff(1011);
+            // if (addSpeed == null) return;
+            // object? obj = ReflectionUtils.GetPrivateField(addSpeed, "effects");
+            // if (obj == null) return;
+            // List<Effect> effects = (List<Effect>)obj;
+            // Effect addSpeedEffect = effects.First();
+            // ModifierAction[] actions = addSpeedEffect.GetComponents<ModifierAction>();
+            // foreach (ModifierAction action in actions)
+            // {
+            //     action.modifierValue = 1.0f;
+            // }
+            
+            Debug.Log("Test Complete.");
+        }
+
         private static void StartRegistry()
         {
             // Register nano injector
             Item? newItem = ItemUtils.RegisterNewItem(NanoInjector);
             if (newItem == null) return;
 
+            // Create new AddSpeed Buff
             Buff? newBuff = BuffUtils.CreateNewBuff(NewAddSpeed);
             if (newBuff == null) return;
+            
+            // Modify AddSpeed Effect
+            object? obj = ReflectionUtils.GetPrivateField(newBuff, "effects");
+            if (obj == null) return;
+            List<Effect> effects = (List<Effect>)obj;
+            Effect addSpeedEffect = effects.First();
+            ModifierAction[] actions = addSpeedEffect.GetComponents<ModifierAction>();
+            foreach (ModifierAction action in actions)
+            {
+                action.modifierValue = 0.5f;
+            }
 
             UsageUtilities usageUtilities = newItem.UsageUtilities;
             UsageBehavior? addBuffPrefab =
