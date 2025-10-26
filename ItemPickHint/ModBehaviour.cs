@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Duckov.Buffs;
 using Duckov.ItemUsage;
-using Duckov.Utilities;
+using ItemPickHint.ModdingUtils;
+using ItemPickHint.ModdingUtils.GameObjectUtils;
 using ItemStatsSystem;
 using UnityEngine;
 
@@ -10,78 +12,70 @@ namespace ItemPickHint
 {
     public class ModBehaviour : Duckov.Modding.ModBehaviour
     {
+        #region RegisterTable
+
+        private static readonly ItemInfo NanoInjector = new ItemInfo
+        {
+            DisplayName = "纳米激素",
+            NewTypeId = 13600,
+            Quality = 5,
+            Value = 2888,
+            Weight = 0.2f,
+            OriginalTypeId = 398, // MaxWeight Injector
+            GameObjectName = "nano_injector",
+        };
+
+        private static readonly BuffInfo NewAddSpeed = new BuffInfo
+        {
+            OriginalID = 1011,
+            NewID = 13600,
+            GameObjectName = "new_add_speed",
+            AdditionalInfo = new Dictionary<string, object>
+            {
+                {"totalLifeTime", 90f}
+            }
+        };
+
+        #endregion
+
         protected override void OnAfterSetup()
         {
-            Debug.Log("VEI: Start!");
-            TestDebugInfoLogger();
-            StartRegistry();
-        }
-
-        private static Buff? FindBuff(int id)
-        {
-            List<Buff> buffs = (List<Buff>) ItemUtils.GetPrivateField(GameplayDataSettings.Buffs, "allBuffs");
-            return buffs.FirstOrDefault(b => b.ID == id);
-        }
-
-        private static void TestDebugInfoLogger()
-        {
-            Item prefab = ItemAssetsCollection.GetPrefab(398);
-            if (prefab == null) return;
-            UsageUtilities usageUtilities = prefab.UsageUtilities;
-            LogHelper(usageUtilities.behaviors.Count);
-            foreach (UsageBehavior behavior in usageUtilities.behaviors.Where(behavior => behavior.GetType() == typeof(AddBuff)))
+            Debug.Log("LMC: Start registry!");
+            try
             {
-                int id = ((AddBuff)behavior).buffPrefab.ID;
-                LogHelper(id);
-                LogHelper(GameplayDataSettings.Buffs.GetBuffDisplayName(id));
+                StartRegistry();
             }
-
-            // Find AddSpeed buff
-            Buff? buff = FindBuff(1011);
-            if (buff == null) return;
-            LogHelper(buff.DisplayName);
-            
-            
-            return;
-
-            void LogHelper(object info)
+            catch (Exception e)
             {
-                Debug.Log($"VEI: {info}");
+                Debug.LogError($"LMC: {e}");
             }
+            
         }
 
         private static void StartRegistry()
         {
-            Item prefab = ItemAssetsCollection.GetPrefab(398);
-            if ( prefab == null)
+            // Register nano injector
+            Item? newItem = ItemUtils.RegisterNewItem(NanoInjector);
+            if (newItem == null) return;
+
+            Buff? newBuff = BuffUtils.CreateNewBuff(NewAddSpeed);
+            if (newBuff == null) return;
+
+            UsageUtilities usageUtilities = newItem.UsageUtilities;
+            UsageBehavior? addBuffPrefab =
+                usageUtilities.behaviors.FirstOrDefault(behavior => behavior.GetType() == typeof(AddBuff));
+            if (addBuffPrefab == null)
             {
-                Debug.LogError("VEI: Original injection item has been removed.");
+                Debug.LogError("LMC: Can't find original AddBuff instance. Fail to Register.");
                 return;
             }
 
-            GameObject gameObject = Instantiate(prefab.gameObject);
-            gameObject.name = "vei:new_injection_test";
-            DontDestroyOnLoad(gameObject);
+            AddBuff newAddBuff = GameObjectUtils.InstantiateNewGameObject<AddBuff>(addBuffPrefab.gameObject, "lmc:add_buff_new_add_speed");
+            newAddBuff.buffPrefab = newBuff;
+            usageUtilities.behaviors.Clear();
+            usageUtilities.behaviors.Add(newAddBuff);
 
-            Item newItem = gameObject.GetComponent<Item>();
-            ItemUtils.SetItemProperties(newItem, new ItemInfo()
-            {
-                DisplayName = "test item",
-                NewTypeId = 10086,
-                Quality = 5,
-                Value = 2888,
-                Weight = 0.2f
-            });
-            
-            if (ItemAssetsCollection.AddDynamicEntry(newItem))
-            {
-                Debug.Log("VEI: Registration complete.");
-            }
-            else
-            {
-                Debug.LogError("VEI: registration failed!");
-                Destroy(gameObject);
-            }
+            Debug.Log("LMC: StartUp Complete!");
         }
     }
 }
