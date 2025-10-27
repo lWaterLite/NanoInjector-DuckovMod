@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ItemPickHint", "ItemPickHint\ItemPickHint.csproj", "{666CB8C9-F4AA-4D0E-BB4F-AAB4A9599D12}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NanoInjector", "NanoInjector\NanoInjector.csproj", "{666CB8C9-F4AA-4D0E-BB4F-AAB4A9599D12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -4,7 +4,7 @@ using Duckov.Buffs;
 using Duckov.Utilities;
 using UnityEngine;
 
-namespace ItemPickHint.ModdingUtils.GameObjectUtils
+namespace NanoInjector.ModdingUtils.GameObjectUtils
 {
     public static class BuffUtils
     {

@@ -1,7 +1,7 @@
 ﻿using ItemStatsSystem;
 using UnityEngine;
 
-namespace ItemPickHint.ModdingUtils.GameObjectUtils
+namespace NanoInjector.ModdingUtils.GameObjectUtils
 {
     public static class ItemUtils
     {

@@ -2,7 +2,7 @@
 using System.Reflection;
 using UnityEngine;
 
-namespace ItemPickHint.ModdingUtils
+namespace NanoInjector.ModdingUtils
 {
     public static class ReflectionUtils
     {

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Duckov.Buffs;
 using Duckov.ItemUsage;
-using ItemPickHint.ModdingUtils;
-using ItemPickHint.ModdingUtils.GameObjectUtils;
 using ItemStatsSystem;
+using NanoInjector.ModdingUtils;
+using NanoInjector.ModdingUtils.GameObjectUtils;
 using UnityEngine;
 
-namespace ItemPickHint
+namespace NanoInjector
 {
     public class ModBehaviour : Duckov.Modding.ModBehaviour
     {

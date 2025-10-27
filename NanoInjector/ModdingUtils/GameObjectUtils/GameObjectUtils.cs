@@ -2,7 +2,7 @@
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ItemPickHint.ModdingUtils.GameObjectUtils
+namespace NanoInjector.ModdingUtils.GameObjectUtils
 {
     public static class GameObjectUtils
     {
