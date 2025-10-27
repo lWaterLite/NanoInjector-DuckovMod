@@ -1,4 +1,4 @@
-﻿$SourceFile = "C:\work\Program_space\Rider\ItemPickHint\ItemPickHint\bin\Debug\netstandard2.1\ItemPickHint.dll"
+﻿$SourceFile = "C:\work\Program_space\Rider\NanoInjector\NanoInjector\bin\Debug\netstandard2.1\NanoInjector.dll"
 $DestinationPath = "D:\SteamLibrary\steamapps\common\Escape from Duckov\Duckov_Data\Mods\ItemPickHint\"
 
 if (-not (Test-Path $SourceFile)) {
