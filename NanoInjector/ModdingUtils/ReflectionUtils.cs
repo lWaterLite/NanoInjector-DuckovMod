@@ -18,7 +18,7 @@ namespace NanoInjector.ModdingUtils
             return target;
         }
 
-        public static object? GetPrivateField(object target, string fieldName)
+        public static object? GetPrivateField(this object target, string fieldName)
         {
             FieldInfo? info = target.GetType().GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
             if (info != null) return info.GetValue(target);

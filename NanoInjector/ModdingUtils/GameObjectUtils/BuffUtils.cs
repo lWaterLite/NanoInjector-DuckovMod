@@ -10,7 +10,7 @@ namespace NanoInjector.ModdingUtils.GameObjectUtils
     {
         public static Buff? FindBuff(int id)
         {
-            object? obj = ReflectionUtils.GetPrivateField(GameplayDataSettings.Buffs, "allBuffs");
+            object? obj = GameplayDataSettings.Buffs.GetPrivateField("allBuffs");
             if (obj == null) return null;
             List<Buff> buffs = (List<Buff>) obj;
             return buffs.FirstOrDefault(b => b.ID == id);
