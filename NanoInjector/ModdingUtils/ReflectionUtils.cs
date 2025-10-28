@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using UnityEngine;
 
 namespace NanoInjector.ModdingUtils
@@ -14,6 +13,7 @@ namespace NanoInjector.ModdingUtils
                 Debug.LogWarning($"LMC: Cannot find field {fieldName} in object {target}, fail to set value.");
                 return target;
             }
+
             fieldInfo.SetValue(target, value);
             return target;
         }

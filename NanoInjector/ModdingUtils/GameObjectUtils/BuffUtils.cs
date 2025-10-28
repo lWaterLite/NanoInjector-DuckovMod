@@ -8,32 +8,28 @@ namespace NanoInjector.ModdingUtils.GameObjectUtils
 {
     public static class BuffUtils
     {
-        public static Buff? FindBuff(int id)
+        public static Buff? FindBuffPrefab(int id)
         {
             object? obj = GameplayDataSettings.Buffs.GetPrivateField("allBuffs");
             if (obj == null) return null;
-            List<Buff> buffs = (List<Buff>) obj;
-            return buffs.FirstOrDefault(b => b.ID == id);
+            var buffs = (List<Buff>)obj;
+            Buff? buff = buffs.FirstOrDefault(b => b.ID == id);
+            if (buff == null) Debug.LogWarning($"LMC: Cannot find buff by id {id}");
+            return buff;
         }
 
-        public static Buff? CreateNewBuff(BuffInfo buffInfo)
+        public static Buff? RegisterNewBuff(BuffInfo buffInfo)
         {
-            Buff? originalBuff = FindBuff(buffInfo.OriginalID);
-            if (originalBuff == null)
-            {
-                Debug.LogError($"LMC: Cannot find buff by id {buffInfo.OriginalID}");
-                return null;
-            }
-            Debug.Log($"LMC: Successfully find Buff id {buffInfo.OriginalID}");
+            Buff? originalBuff = FindBuffPrefab(buffInfo.OriginalID);
+            if (originalBuff == null) return null;
 
-            Buff newBuff =
-                GameObjectUtils.InstantiateNewGameObject<Buff>(originalBuff.gameObject, buffInfo.GameObjectName);
+            Buff newBuff = Object.Instantiate(originalBuff);
+            Object.DontDestroyOnLoad(newBuff);
+            newBuff.name = $"lmc:buff_{buffInfo.DisplayNameKey}";
             newBuff.ID = buffInfo.NewID;
             if (buffInfo.AdditionalInfo == null) return newBuff;
-            foreach ((string key, object value) in buffInfo.AdditionalInfo)
-            {
-                newBuff.SetPrivateField(key, value);
-            }
+            foreach ((string key, object value) in buffInfo.AdditionalInfo) newBuff.SetPrivateField(key, value);
+            Debug.Log($"LMC: Successfully register new buff {buffInfo.NewID}");
 
             return newBuff;
         }
@@ -41,9 +37,10 @@ namespace NanoInjector.ModdingUtils.GameObjectUtils
 
     public class BuffInfo
     {
-        public int OriginalID;
-        public int NewID;
-        public string GameObjectName = "default";
         public Dictionary<string, object>? AdditionalInfo;
+        public string DisplayNameKey = "default";
+        public int NewID;
+        public int OriginalID;
+        public string DescriptionKey => DisplayNameKey + "_Desc";
     }
 }

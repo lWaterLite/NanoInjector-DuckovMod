@@ -12,27 +12,35 @@ namespace NanoInjector.ModdingUtils.GameObjectUtils
                 .SetPrivateField("value", itemInfo.Value)
                 .SetPrivateField("quality", itemInfo.Quality)
                 .SetPrivateField("weight", itemInfo.Weight)
-                .SetPrivateField("displayName", itemInfo.DisplayName);
+                .SetPrivateField("displayName", itemInfo.DisplayNameKey);
+        }
+
+        public static Item? GetItemPrefab(int typeID)
+        {
+            Item prefab = ItemAssetsCollection.GetPrefab(typeID);
+            if (prefab != null) return prefab;
+            Debug.LogError($"LMC: Cannot find original item by id {typeID}");
+            return null;
         }
 
         public static Item? RegisterNewItem(ItemInfo itemInfo)
         {
-            Item prefab = ItemAssetsCollection.GetPrefab(itemInfo.OriginalTypeId);
-            if (prefab == null)
-            {
-                Debug.LogError($"LMC: Cannot find original item by id {itemInfo.OriginalTypeId}, exit item registration.");
-                return null;
-            }
+            Item? prefab = GetItemPrefab(itemInfo.OriginalTypeId);
+            if (prefab == null) return null;
 
-            Item item = GameObjectUtils.InstantiateNewGameObject<Item>(prefab.gameObject, itemInfo.GameObjectName);
+            GameObject itemGameObject = Object.Instantiate(prefab.gameObject);
+            itemGameObject.name = $"lmc:item_{itemInfo.DisplayNameKey}";
+            Item item = itemGameObject.GetComponent<Item>();
+
             SetItemProperties(item, itemInfo);
 
             if (ItemAssetsCollection.AddDynamicEntry(item))
             {
-                Debug.Log($"LMC: Successfully register new item id {itemInfo.NewTypeId}");
+                Debug.Log($"LMC: Successfully register new item {itemInfo.NewTypeId}");
                 return item;
             }
-            Debug.LogError($"LMC: Fail to register new item id {itemInfo.NewTypeId}");
+
+            Debug.LogWarning($"LMC: Fail to register new item {itemInfo.NewTypeId}");
             Object.Destroy(item);
             return null;
         }
@@ -40,15 +48,12 @@ namespace NanoInjector.ModdingUtils.GameObjectUtils
 
     public class ItemInfo
     {
-        public int OriginalTypeId;
+        public string DisplayNameKey = "default";
         public int NewTypeId;
-        public int Value;
+        public int OriginalTypeId;
         public int Quality;
+        public int Value;
         public float Weight;
-        public string DisplayName = "default";
-        public string GameObjectName = "default";
-        public string LocalizationKey => GameObjectName;
-        public string LocalizationDesc => GameObjectName + "_Desc";
-
+        public string DescriptionKey => DisplayNameKey + "_Desc";
     }
 }
