@@ -4,28 +4,16 @@ namespace NanoInjector.ModdingUtils.GameObjectUtils
 {
     public static class ModifierUtils
     {
-        
-    }
-
-    public class ConfigModifierAction : ModifierAction
-    {
-        private bool _isConfig;
-        
-        protected override void Awake()
+        public static void SetConfig(this ModifierAction action, ModifierInfo info)
         {
-            if (!_isConfig) return;
-            base.Awake();
-        }
-
-        public void SetConfig(ModifierInfo info)
-        {
-            _isConfig = true;
-            enabled = true;
-            targetStatKey = info.StatKey;
-            ModifierType = info.ModifierType;
-            modifierValue = info.Value;
-            
-            base.Awake();
+            action.enabled = true;
+            action.targetStatKey = info.StatKey;
+            action.ModifierType = info.ModifierType;
+            action.modifierValue = info.Value;
+            // action.SetPrivateField("modifier",
+            //     new Modifier(action.ModifierType, action.modifierValue, action.overrideOrder, action.overrideOrderValue,
+            //         action.Master));
+            // action.SetPrivateField("targetStatHash", action.targetStatKey.GetHashCode());
         }
     }
 

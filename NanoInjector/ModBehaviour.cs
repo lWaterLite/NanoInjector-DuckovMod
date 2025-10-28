@@ -50,12 +50,14 @@ namespace NanoInjector
             // Create New Modifier
             foreach (ModifierAction action in effectNanoBoostGameObject.GetComponents<ModifierAction>())
                 Destroy(action);
-            ConfigModifierAction nanoPhysicResist = effectNanoBoostGameObject.AddComponent<ConfigModifierAction>();
+            effectNanoBoostGameObject.SetActive(false);
+            ModifierAction nanoPhysicResist = effectNanoBoostGameObject.AddComponent<ModifierAction>();
             nanoPhysicResist.SetConfig(NanoPhysicResist);
-            ConfigModifierAction nanoWalkSpeed = effectNanoBoostGameObject.AddComponent<ConfigModifierAction>();
+            ModifierAction nanoWalkSpeed = effectNanoBoostGameObject.AddComponent<ModifierAction>();
             nanoWalkSpeed.SetConfig(NanoWalkSpeed);
-            ConfigModifierAction nanoRunSpeed = effectNanoBoostGameObject.AddComponent<ConfigModifierAction>();
+            ModifierAction nanoRunSpeed = effectNanoBoostGameObject.AddComponent<ModifierAction>();
             nanoRunSpeed.SetConfig(NanoRunSpeed);
+            effectNanoBoostGameObject.SetActive(true);
 
             Effect effectNanoBoost = effectNanoBoostGameObject.GetComponent<Effect>();
             object? obj = effectNanoBoost.GetPrivateField("actions");
