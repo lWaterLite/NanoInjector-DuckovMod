@@ -38,42 +38,47 @@ namespace NanoInjector
             if (newItem == null) return;
             foreach (UsageBehavior behavior in newItem.gameObject.GetComponents<UsageBehavior>()) Destroy(behavior);
 
-            UsageUtilities usageUtilities = newItem.gameObject.GetComponent<UsageUtilities>();
+
             // Register new NanoBoost Buff
-            Buff? newBuff = BuffUtils.RegisterNewBuff(NanoBoost);
-            if (newBuff == null) return;
+            Buff? nanoBoostBuff = BuffUtils.RegisterNewBuff(NanoBoost);
+            if (nanoBoostBuff == null) return;
+            
+            // Register new NanoBleedResist Buff
+            Buff? nanoBleedResistBuff = BuffUtils.RegisterNewBuff(NanoBleedResist);
+            if (nanoBleedResistBuff == null) return;
 
             // Modify NanoBoost Effect
-            GameObject effectNanoBoostGameObject = newBuff.gameObject.transform.GetChild(0).gameObject;
-            effectNanoBoostGameObject.name = $"effect_{NanoBoost.DisplayNameKey}";
+            GameObject effectNanoBoostGameObject = nanoBoostBuff.gameObject.transform.GetChild(0).gameObject;
+            effectNanoBoostGameObject.name = $"lmc:effect_{NanoBoost.DisplayNameKey}";
 
             // Create New Modifier
             foreach (ModifierAction action in effectNanoBoostGameObject.GetComponents<ModifierAction>())
                 Destroy(action);
             effectNanoBoostGameObject.SetActive(false);
-            ModifierAction nanoPhysicResist = effectNanoBoostGameObject.AddComponent<ModifierAction>();
-            nanoPhysicResist.SetConfig(NanoPhysicResist);
-            ModifierAction nanoWalkSpeed = effectNanoBoostGameObject.AddComponent<ModifierAction>();
-            nanoWalkSpeed.SetConfig(NanoWalkSpeed);
-            ModifierAction nanoRunSpeed = effectNanoBoostGameObject.AddComponent<ModifierAction>();
-            nanoRunSpeed.SetConfig(NanoRunSpeed);
+            var effectActions = new List<EffectAction>();
+            foreach (ModifierInfo modifierInfo in ModifierInfos)
+            {
+                ModifierAction nanoModifierAction = effectNanoBoostGameObject.AddComponent<ModifierAction>();
+                nanoModifierAction.SetConfig(modifierInfo);
+                effectActions.Add(nanoModifierAction);
+            }
+
             effectNanoBoostGameObject.SetActive(true);
 
             Effect effectNanoBoost = effectNanoBoostGameObject.GetComponent<Effect>();
-            object? obj = effectNanoBoost.GetPrivateField("actions");
-            if (obj == null) return;
-            var actions = (List<EffectAction>)obj;
-            actions.Clear();
-            actions.Add(nanoPhysicResist);
-            actions.Add(nanoWalkSpeed);
-            actions.Add(nanoRunSpeed);
+            effectNanoBoost.SetPrivateField("actions", effectActions);
 
             // Add UsageBehaviour
-            AddBuff newAddBuff = newItem.AddComponent<AddBuff>();
-            DontDestroyOnLoad(newAddBuff);
-            newAddBuff.buffPrefab = newBuff;
+            UsageUtilities usageUtilities = newItem.gameObject.GetComponent<UsageUtilities>();
+            AddBuff nanoBoostAddBuff = newItem.AddComponent<AddBuff>();
+            nanoBoostAddBuff.buffPrefab = nanoBoostBuff;
+            AddBuff nanoBleedResistAddBuff = newItem.AddComponent<AddBuff>();
+            nanoBleedResistAddBuff.buffPrefab = nanoBleedResistBuff;
             usageUtilities.behaviors.Clear();
-            usageUtilities.behaviors.Add(newAddBuff);
+            usageUtilities.behaviors.Add(nanoBoostAddBuff);
+            usageUtilities.behaviors.Add(nanoBleedResistAddBuff);
+            
+            LocalizationUtils.SetLocalization();
 
             Debug.Log("LMC: StartUp Complete!");
         }
@@ -103,25 +108,74 @@ namespace NanoInjector
             }
         };
 
-        private static readonly ModifierInfo NanoPhysicResist = new ModifierInfo
+        private static readonly BuffInfo NanoBleedResist = new BuffInfo()
         {
-            StatKey = "ElementFactor_Physics",
-            ModifierType = ModifierType.PercentageAdd,
-            Value = -0.50f
+            OriginalID = 1491, // BleedResist Buff
+            NewID = 13601,
+            DisplayNameKey = "nano_bleed_resist",
+            AdditionalInfo = new Dictionary<string, object>
+            {
+                { "totalLifeTime", 90f }
+            }
         };
 
-        private static readonly ModifierInfo NanoWalkSpeed = new ModifierInfo
+        private static readonly List<ModifierInfo> ModifierInfos = new List<ModifierInfo>
         {
-            StatKey = "WalkSpeed",
-            ModifierType = ModifierType.PercentageAdd,
-            Value = 0.3f
-        };
-
-        private static readonly ModifierInfo NanoRunSpeed = new ModifierInfo
-        {
-            StatKey = "RunSpeed",
-            ModifierType = ModifierType.PercentageAdd,
-            Value = 0.3f
+            new ModifierInfo
+            {
+                StatKey = "ElementFactor_Physics",
+                ModifierType = ModifierType.PercentageAdd,
+                Value = -0.50f
+            },
+            new ModifierInfo
+            {
+                StatKey = "WalkSpeed",
+                ModifierType = ModifierType.PercentageAdd,
+                Value = 0.3f
+            },
+            new ModifierInfo
+            {
+                StatKey = "RunSpeed",
+                ModifierType = ModifierType.PercentageAdd,
+                Value = 0.3f
+            },
+            new ModifierInfo
+            {
+                StatKey = "Stamina",
+                ModifierType = ModifierType.Add,
+                Value = 40f
+            },
+            new ModifierInfo
+            {
+                StatKey = "StaminaRecoverRate",
+                ModifierType = ModifierType.PercentageAdd,
+                Value = 0.2f
+            },
+            new ModifierInfo
+            {
+                StatKey = "StaminaDrainRate",
+                ModifierType = ModifierType.PercentageAdd,
+                Value = -0.4f
+            },
+            new ModifierInfo
+            {
+                StatKey = "MeleeDamageMultiplier",
+                ModifierType = ModifierType.PercentageAdd,
+                Value = 0.5f
+            },
+            new ModifierInfo()
+            {
+                StatKey = "RecoilControl",
+                ModifierType = ModifierType.Add,
+                Value = 0.5f
+            },
+            new ModifierInfo()
+            {
+                StatKey = "GunDamageMultiplier",
+                ModifierType = ModifierType.Add,
+                Value = 0.5f
+            }
+            
         };
 
         #endregion
