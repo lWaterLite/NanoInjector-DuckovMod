@@ -27,6 +27,9 @@ namespace NanoInjector.ModdingUtils.GameObjectUtils
             Object.DontDestroyOnLoad(newBuff);
             newBuff.name = $"lmc:buff_{buffInfo.DisplayNameKey}";
             newBuff.ID = buffInfo.NewID;
+            newBuff.SetPrivateField("displayName", buffInfo.DisplayNameKey);
+            newBuff.SetPrivateField("description", buffInfo.DisplayNameKey + "_Desc");
+            newBuff.SetPrivateField("hide", false);
             if (buffInfo.AdditionalInfo == null) return newBuff;
             foreach ((string key, object value) in buffInfo.AdditionalInfo) newBuff.SetPrivateField(key, value);
             Debug.Log($"LMC: Successfully register new buff {buffInfo.NewID}");
@@ -41,6 +44,5 @@ namespace NanoInjector.ModdingUtils.GameObjectUtils
         public string DisplayNameKey = "default";
         public int NewID;
         public int OriginalID;
-        public string DescriptionKey => DisplayNameKey + "_Desc";
     }
 }

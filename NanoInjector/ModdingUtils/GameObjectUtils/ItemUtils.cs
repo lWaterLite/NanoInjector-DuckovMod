@@ -30,6 +30,7 @@ namespace NanoInjector.ModdingUtils.GameObjectUtils
 
             GameObject itemGameObject = Object.Instantiate(prefab.gameObject);
             itemGameObject.name = $"lmc:item_{itemInfo.DisplayNameKey}";
+            Object.DontDestroyOnLoad(itemGameObject);
             Item item = itemGameObject.GetComponent<Item>();
 
             SetItemProperties(item, itemInfo);
@@ -54,6 +55,5 @@ namespace NanoInjector.ModdingUtils.GameObjectUtils
         public int Quality;
         public int Value;
         public float Weight;
-        public string DescriptionKey => DisplayNameKey + "_Desc";
     }
 }

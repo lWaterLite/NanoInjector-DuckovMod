@@ -1,0 +1,14 @@
+﻿{
+  "nano_injector": {
+    "DisplayName": "纳米激素针",
+    "Description": "纳米激素针，释放你的怒火吧。"
+  },
+  "nano_boost": {
+    "DisplayName": "纳米激素",
+    "Description": "提高近战和远程伤害，降低受到的物理伤害。\n增加速度，增加耐力和耐力回复速率，减少耐力消耗。"
+  },
+  "nano_bleed_resist": {
+    "DisplayName": "流血免疫",
+    "Description": "免疫流血效果"
+  }
+}

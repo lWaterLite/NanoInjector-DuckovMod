@@ -1,0 +1,10 @@
+﻿{
+  "nano_injector": {
+    "DisplayName": "Nano Injector",
+    "Description": "Nano Injector, get some power."
+  },
+  "nano_boost": {
+    "DisplayName": "Nano Boost",
+    "Description": "Nano hormones, enhance your stamina, increase damage and physical resistance."
+  }
+}
