@@ -97,7 +97,7 @@ namespace NanoInjector
 
         // GameObject Name Rule: lmc:{class}_{display_name_key}
 
-        private static readonly ItemInfo NanoInjector = new ItemInfo
+        private static readonly ItemInfo NanoInjector = new()
         {
             DisplayNameKey = "nano_injector",
             NewTypeId = 13600,
@@ -105,10 +105,11 @@ namespace NanoInjector
             Value = 2888,
             Weight = 0.2f,
             OriginalTypeId = 398, // MaxWeight Injector
+            EmbeddedSourceType = EmbeddedSourceType.PNG,
             AdditionalInfo = { { "maxStackCount", 5 } }
         };
 
-        private static readonly BuffInfo NanoBoost = new BuffInfo
+        private static readonly BuffInfo NanoBoost = new()
         {
             OriginalID = 1011, // AddSpeed Buff
             NewID = 13600,
@@ -119,7 +120,7 @@ namespace NanoInjector
             }
         };
 
-        private static readonly BuffInfo NanoBleedResist = new BuffInfo
+        private static readonly BuffInfo NanoBleedResist = new()
         {
             OriginalID = 1491, // BleedResist Buff
             NewID = 13601,
@@ -130,65 +131,73 @@ namespace NanoInjector
             }
         };
 
-        private static readonly List<ModifierInfo> ModifierInfos = new List<ModifierInfo>
-        {
+        private static readonly List<ModifierInfo> ModifierInfos =
+        [
             new ModifierInfo
             {
                 StatKey = "ElementFactor_Physics",
                 ModifierType = ModifierType.PercentageAdd,
                 Value = -0.50f
             },
+
             new ModifierInfo
             {
                 StatKey = "WalkSpeed",
                 ModifierType = ModifierType.PercentageAdd,
                 Value = 0.3f
             },
+
             new ModifierInfo
             {
                 StatKey = "RunSpeed",
                 ModifierType = ModifierType.PercentageAdd,
                 Value = 0.3f
             },
+
             new ModifierInfo
             {
                 StatKey = "Stamina",
                 ModifierType = ModifierType.Add,
                 Value = 40f
             },
+
             new ModifierInfo
             {
                 StatKey = "StaminaRecoverRate",
                 ModifierType = ModifierType.PercentageAdd,
                 Value = 0.2f
             },
+
             new ModifierInfo
             {
                 StatKey = "StaminaDrainRate",
                 ModifierType = ModifierType.PercentageAdd,
                 Value = -0.4f
             },
+
             new ModifierInfo
             {
                 StatKey = "MeleeDamageMultiplier",
                 ModifierType = ModifierType.PercentageAdd,
                 Value = 0.5f
             },
+
             new ModifierInfo
             {
                 StatKey = "RecoilControl",
                 ModifierType = ModifierType.Add,
                 Value = 0.5f
             },
+
             new ModifierInfo
             {
                 StatKey = "GunDamageMultiplier",
                 ModifierType = ModifierType.Add,
                 Value = 0.5f
             }
-        };
+        ];
 
-        private static readonly StockShopDatabase.ItemEntry NanoInjectorItemEntry = new StockShopDatabase.ItemEntry
+        private static readonly StockShopDatabase.ItemEntry NanoInjectorItemEntry = new()
         {
             forceUnlock = true,
             lockInDemo = false,

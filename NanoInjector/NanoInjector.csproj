@@ -39,6 +39,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="Assets\NanoInjector.png" />
+      <EmbeddedResource Include="Assets\nano_injector.png" />
     </ItemGroup>
 </Project>
