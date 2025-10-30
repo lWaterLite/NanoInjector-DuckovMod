@@ -15,11 +15,12 @@ namespace NanoInjector
     {
         protected override void OnAfterSetup()
         {
-            Debug.Log("LMC: Start registry!");
+            Debug.Log("LMC: Start AfterSetup!");
             try
             {
                 TestModding();
-                StartRegistry();
+                NanoInjectorRegistry();
+                MerchantModify();
             }
             catch (Exception e)
             {
@@ -31,7 +32,7 @@ namespace NanoInjector
         {
         }
 
-        private static void StartRegistry()
+        private static void NanoInjectorRegistry()
         {
             // Register nano injector
             Item? newItem = ItemUtils.RegisterNewItem(NanoInjector);
@@ -42,7 +43,7 @@ namespace NanoInjector
             // Register new NanoBoost Buff
             Buff? nanoBoostBuff = BuffUtils.RegisterNewBuff(NanoBoost);
             if (nanoBoostBuff == null) return;
-            
+
             // Register new NanoBleedResist Buff
             Buff? nanoBleedResistBuff = BuffUtils.RegisterNewBuff(NanoBleedResist);
             if (nanoBleedResistBuff == null) return;
@@ -77,10 +78,19 @@ namespace NanoInjector
             usageUtilities.behaviors.Clear();
             usageUtilities.behaviors.Add(nanoBoostAddBuff);
             usageUtilities.behaviors.Add(nanoBleedResistAddBuff);
-            
+
             LocalizationUtils.SetLocalization();
 
-            Debug.Log("LMC: StartUp Complete!");
+            Debug.Log("LMC: NanoInjectorRegistry Complete!");
+        }
+
+        private static void MerchantModify()
+        {
+            StockShopDatabase database = StockShopDatabase.Instance;
+            StockShopDatabase.MerchantProfile profile = database.GetMerchantProfile("Merchant_Normal");
+            profile.entries.Add(NanoInjectorItemEntry);
+
+            Debug.Log("LMC: Merchant Modify Complete!");
         }
 
         #region RegisterTable
@@ -94,7 +104,8 @@ namespace NanoInjector
             Quality = 5,
             Value = 2888,
             Weight = 0.2f,
-            OriginalTypeId = 398 // MaxWeight Injector
+            OriginalTypeId = 398, // MaxWeight Injector
+            AdditionalInfo = { { "maxStackCount", 5 } }
         };
 
         private static readonly BuffInfo NanoBoost = new BuffInfo
@@ -108,7 +119,7 @@ namespace NanoInjector
             }
         };
 
-        private static readonly BuffInfo NanoBleedResist = new BuffInfo()
+        private static readonly BuffInfo NanoBleedResist = new BuffInfo
         {
             OriginalID = 1491, // BleedResist Buff
             NewID = 13601,
@@ -163,19 +174,28 @@ namespace NanoInjector
                 ModifierType = ModifierType.PercentageAdd,
                 Value = 0.5f
             },
-            new ModifierInfo()
+            new ModifierInfo
             {
                 StatKey = "RecoilControl",
                 ModifierType = ModifierType.Add,
                 Value = 0.5f
             },
-            new ModifierInfo()
+            new ModifierInfo
             {
                 StatKey = "GunDamageMultiplier",
                 ModifierType = ModifierType.Add,
                 Value = 0.5f
             }
-            
+        };
+
+        private static readonly StockShopDatabase.ItemEntry NanoInjectorItemEntry = new StockShopDatabase.ItemEntry
+        {
+            forceUnlock = true,
+            lockInDemo = false,
+            maxStock = 5,
+            possibility = 1,
+            priceFactor = 1,
+            typeID = 13600
         };
 
         #endregion

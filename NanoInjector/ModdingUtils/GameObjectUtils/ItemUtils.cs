@@ -1,4 +1,5 @@
-﻿using ItemStatsSystem;
+﻿using System.Collections.Generic;
+using ItemStatsSystem;
 using UnityEngine;
 
 namespace NanoInjector.ModdingUtils.GameObjectUtils
@@ -13,6 +14,12 @@ namespace NanoInjector.ModdingUtils.GameObjectUtils
                 .SetPrivateField("quality", itemInfo.Quality)
                 .SetPrivateField("weight", itemInfo.Weight)
                 .SetPrivateField("displayName", itemInfo.DisplayNameKey);
+            
+            if (itemInfo.AdditionalInfo.Count == 0) return;
+            foreach ((string? key, object? value) in itemInfo.AdditionalInfo)
+            {
+                target.SetPrivateField(key, value);
+            }
         }
 
         public static Item? GetItemPrefab(int typeID)
@@ -55,5 +62,6 @@ namespace NanoInjector.ModdingUtils.GameObjectUtils
         public int Quality;
         public int Value;
         public float Weight;
+        public Dictionary<string, object> AdditionalInfo = new Dictionary<string, object>();
     }
 }
