@@ -5,63 +5,62 @@ using Newtonsoft.Json;
 using SodaCraft.Localizations;
 using UnityEngine;
 
-namespace NanoInjector.ModdingUtils
+namespace NanoInjector.ModdingUtils;
+
+public record LocalizationText
 {
-    public class LocalizationText
+    public string Description = string.Empty;
+    public string DisplayName = string.Empty;
+}
+
+public static class LocalizationUtils
+{
+    private static readonly string LanguageDirectory;
+    private static Dictionary<string, LocalizationText>? _texts = new();
+
+    private static readonly Dictionary<SystemLanguage, string> LanguageFileNames =
+        new()
+        {
+            { SystemLanguage.ChineseSimplified, "zh-cn.json" },
+            { SystemLanguage.ChineseTraditional, "zh-tw.json" },
+            { SystemLanguage.English, "en-us.txt" }
+        };
+
+    static LocalizationUtils()
     {
-        public string Description = string.Empty;
-        public string DisplayName = string.Empty;
+        LanguageDirectory =
+            Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty,
+                "Languages");
     }
-    
-    public static class LocalizationUtils
+
+    private static void GetLocalizationFile(SystemLanguage language)
     {
-        private static readonly string LanguageDirectory;
-        private static Dictionary<string, LocalizationText>? _texts = new Dictionary<string, LocalizationText>();
+        string path =
+            LanguageFileNames.GetValueOrDefault(language,
+                "en-us.json"); // If language doesn't support, fall back to English as default.
+        path = Path.Combine(LanguageDirectory, path);
+        if (!File.Exists(path)) return;
+        using StreamReader file = File.OpenText(path);
+        JsonSerializer serializer = new();
+        _texts = serializer.Deserialize(file,
+            typeof(Dictionary<string, LocalizationText>)) as Dictionary<string, LocalizationText>;
+    }
 
-        private static readonly Dictionary<SystemLanguage, string> LanguageFileNames =
-            new Dictionary<SystemLanguage, string>
-            {
-                { SystemLanguage.ChineseSimplified, "zh-cn.json" },
-                { SystemLanguage.ChineseTraditional, "zh-tw.json" },
-                { SystemLanguage.English, "en-us.txt" }
-            };
-
-        static LocalizationUtils()
+    public static void SetLocalization()
+    {
+        SystemLanguage currentLanguage = LocalizationManager.CurrentLanguage;
+        GetLocalizationFile(currentLanguage);
+        if (_texts == null)
         {
-            LanguageDirectory =
-                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty,
-                    "Languages");
+            Debug.LogWarning("LMC: Localization text is missing, please check the language files");
+            return;
         }
 
-        private static void GetLocalizationFile(SystemLanguage language)
+        foreach ((string? key, LocalizationText localizationText) in _texts)
         {
-            string path =
-                LanguageFileNames.GetValueOrDefault(language,
-                    "en-us.json"); // If language doesn't support, fall back to English as default.
-            path = Path.Combine(LanguageDirectory, path);
-            if (!File.Exists(path)) return;
-            using StreamReader file = File.OpenText(path);
-            JsonSerializer serializer = new JsonSerializer();
-            _texts = serializer.Deserialize(file,
-                typeof(Dictionary<string, LocalizationText>)) as Dictionary<string, LocalizationText>;
-        }
-
-        public static void SetLocalization()
-        {
-            SystemLanguage currentLanguage = LocalizationManager.CurrentLanguage;
-            GetLocalizationFile(currentLanguage);
-            if (_texts == null)
-            {
-                Debug.LogWarning("LMC: Localization text is missing, please check the language files");
-                return;
-            }
-
-            foreach ((string? key, LocalizationText localizationText) in _texts)
-            {
-                LocalizationManager.overrideTexts.Add(key, localizationText.DisplayName);
-                LocalizationManager.overrideTexts.Add(key + "_Desc",
-                    localizationText.Description + "\n\n<color=grey>[Mod: NanoInjector]</color>");
-            }
+            LocalizationManager.overrideTexts.Add(key, localizationText.DisplayName);
+            LocalizationManager.overrideTexts.Add(key + "_Desc",
+                localizationText.Description + "\n\n<color=grey>[Mod: NanoInjector]</color>");
         }
     }
 }
