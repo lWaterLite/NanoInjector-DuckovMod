@@ -52,7 +52,7 @@ namespace NanoInjector.ModdingUtils.GameObjectUtils
                 }
                 texture2D.filterMode = FilterMode.Bilinear;
                 texture2D.Apply();
-                Sprite sprite = Sprite.Create(texture2D, new Rect(0.0f, 0.0f, texture2D.width, texture2D.height), new Vector2(0.5f, 0.5f), 100f);
+                Sprite sprite = Sprite.Create(texture2D, new Rect(0.0f, 0.0f, texture2D.width, texture2D.height), new Vector2(0.5f, 0.5f), 50f);
                 GameObject target = new($"lmc:sprite_{itemInfo.DisplayNameKey}");
                 Object.DontDestroyOnLoad(target);
                 ResourceHolder resourceHolder = target.AddComponent<ResourceHolder>();
